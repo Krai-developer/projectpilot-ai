@@ -72,6 +72,24 @@ class OllamaLocalService:
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout_seconds) as client:
+                # Auto-resolve installed model if configured default is not pulled
+                try:
+                    tags_resp = await client.get(f"{self.base_url}/api/tags", timeout=5.0)
+                    if tags_resp.status_code == 200:
+                        models_list = [
+                            m.get("name", "")
+                            for m in tags_resp.json().get("models", [])
+                            if isinstance(m, dict) and m.get("name")
+                        ]
+                        if models_list and not any(
+                            m == self.model_name or m.startswith(f"{self.model_name}:")
+                            for m in models_list
+                        ):
+                            self.model_name = models_list[0]
+                            request_body["model"] = self.model_name
+                except Exception:
+                    pass
+
                 response = await client.post(url, json=request_body)
         except httpx.TimeoutException as exc:
             raise OllamaServiceError(

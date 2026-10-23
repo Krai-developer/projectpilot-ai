@@ -19,6 +19,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../lib/api';
 import { AIHealthStatus } from '../types';
+import { AIOrbAssistant } from './three/AIOrbAssistant';
 
 export const Layout: React.FC = () => {
   const { user, logout, theme, toggleTheme } = useAuth();
@@ -112,6 +113,8 @@ export const Layout: React.FC = () => {
             <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
               {aiHealth?.status === 'available'
                 ? 'Local inference ready'
+                : aiHealth?.status === 'model_missing'
+                ? 'No Ollama model pulled'
                 : 'Offline — deterministic gate active'}
             </p>
           </div>
@@ -210,6 +213,7 @@ export const Layout: React.FC = () => {
         <main className="flex-1 overflow-y-auto p-4 md:p-8 max-w-7xl w-full mx-auto">
           <Outlet />
         </main>
+        <AIOrbAssistant aiHealth={aiHealth} variant="floating" />
       </div>
     </div>
   );

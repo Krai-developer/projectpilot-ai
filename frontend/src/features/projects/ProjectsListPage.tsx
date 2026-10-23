@@ -11,6 +11,8 @@ import {
 import { api } from '../../lib/api';
 import { PriorityLevel, Project, ProjectStatus } from '../../types';
 import { StatusBadge } from '../../components/StatusBadge';
+import { TiltCard3D } from '../../components/three/TiltCard3D';
+import { ScrollReveal } from '../../components/three/ScrollReveal';
 
 export const ProjectsListPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,7 +81,6 @@ export const ProjectsListPage: React.FC = () => {
         deadline: deadline || null,
       });
       setShowCreateModal(false);
-      setSearchParams({});
       navigate(`/projects/${created.id}`);
     } catch (err: any) {
       setFormError(err?.message || 'Failed to create project.');
@@ -180,77 +181,80 @@ export const ProjectsListPage: React.FC = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-start justify-between gap-2 mb-2">
-                  <Link
-                    to={`/projects/${project.id}`}
-                    className="text-base font-semibold hover:text-indigo-600 dark:hover:text-indigo-400"
-                  >
-                    {project.name}
-                  </Link>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <StatusBadge status={project.priority} />
-                    <StatusBadge status={project.status} />
-                  </div>
-                </div>
-
-                <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
-                  {project.description || 'No description provided.'}
-                </p>
-              </div>
-
-              <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          {projects.map((project, idx) => (
+            <ScrollReveal key={project.id} delay={idx * 0.04}>
+              <TiltCard3D
+                intensity={5}
+                glowColor="rgba(56, 189, 248, 0.16)"
+                className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm flex flex-col justify-between h-full"
+              >
                 <div>
-                  <div className="flex items-center justify-between text-xs mb-1">
-                    <span className="text-slate-500">Weighted Progress</span>
-                    <span className="font-mono font-semibold">{project.progress_percentage}%</span>
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <Link
+                      to={`/projects/${project.id}`}
+                      className="text-base font-semibold hover:text-indigo-600 dark:hover:text-cyan-400 transition-colors"
+                    >
+                      {project.name}
+                    </Link>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <StatusBadge status={project.priority} />
+                      <StatusBadge status={project.status} />
+                    </div>
                   </div>
-                  <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-indigo-600 transition-all"
-                      style={{ width: `${Math.min(100, project.progress_percentage)}%` }}
-                    />
-                  </div>
+
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                    {project.description || 'No description provided.'}
+                  </p>
                 </div>
 
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <StatusBadge status={project.readiness_status} />
-                    <span className="text-slate-500">
-                      {project.completed_tasks}/{project.total_tasks} tasks
-                    </span>
+                <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-slate-500">Weighted Progress</span>
+                      <span className="font-mono font-semibold">{project.progress_percentage}%</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-indigo-600 via-cyan-500 to-purple-500 transition-all"
+                        style={{ width: `${Math.min(100, project.progress_percentage)}%` }}
+                      />
+                    </div>
                   </div>
 
-                  <div className="flex items-center gap-1">
-                    {project.status !== 'Archived' && (
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2">
+                      <StatusBadge status={project.readiness_status} />
+                      <span className="text-slate-500">
+                        {project.completed_tasks}/{project.total_tasks} tasks
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      {project.status !== 'Archived' && (
+                        <button
+                          type="button"
+                          onClick={() => handleArchiveProject(project)}
+                          title="Archive project"
+                          aria-label={`Archive ${project.name}`}
+                          className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        >
+                          <Archive className="h-4 w-4" />
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() => handleArchiveProject(project)}
-                        title="Archive project"
-                        aria-label={`Archive ${project.name}`}
-                        className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                        onClick={() => setConfirmDeleteId(project.id)}
+                        title="Delete project"
+                        aria-label={`Delete ${project.name}`}
+                        className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
                       >
-                        <Archive className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setConfirmDeleteId(project.id)}
-                      title="Delete project"
-                      aria-label={`Delete ${project.name}`}
-                      className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              </TiltCard3D>
+            </ScrollReveal>
           ))}
         </div>
       )}

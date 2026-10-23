@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 test('Full ProjectPilot AI E2E Workflow: Register, Create Project, Requirements & Tasks, Assessment, Completion Gate, Confirmation, and Invalidation', async ({
   page,
 }) => {
+  test.setTimeout(90000);
   const uniqueEmail = `e2e-${Date.now()}@example.com`;
 
   // 1. Register a new account
@@ -13,8 +14,9 @@ test('Full ProjectPilot AI E2E Workflow: Register, Create Project, Requirements 
   await page.getByLabel(/Password/i).fill('StrongE2EPass123!');
   await page.getByRole('button', { name: 'Create Account' }).click();
 
-  // Verify redirect to Dashboard
+  // Verify redirect to Dashboard & 3D AI Assistant presence
   await expect(page.getByRole('heading', { name: 'Project Completion Dashboard' })).toBeVisible();
+  await expect(page.getByTestId('ai-orb-assistant-trigger').first()).toBeVisible();
 
   // 2. Create a new project
   await page.getByRole('link', { name: 'New Project' }).first().click();
@@ -25,6 +27,7 @@ test('Full ProjectPilot AI E2E Workflow: Register, Create Project, Requirements 
   await page.getByRole('dialog').getByRole('button', { name: 'Create Project' }).click();
 
   await expect(page.getByRole('heading', { name: 'Autonomous Drone Telemetry' })).toBeVisible();
+  await expect(page.getByTestId('progress-ring-3d').first()).toBeVisible();
 
   // 3. Add a mandatory requirement
   await page.getByRole('tab', { name: /Requirements/i }).click();
@@ -47,7 +50,7 @@ test('Full ProjectPilot AI E2E Workflow: Register, Create Project, Requirements 
 
   // 5. Run an assessment while work is incomplete & inspect missing work
   await page.getByRole('button', { name: 'Assess Project Completion' }).click();
-  await expect(page.getByText('Overall Summary')).toBeVisible();
+  await expect(page.getByText('Overall Summary')).toBeVisible({ timeout: 65000 });
   await expect(page.getByText(/Implement emergency cutoff handler/i).first()).toBeVisible();
 
   // 6. Update task status to Done

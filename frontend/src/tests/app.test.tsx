@@ -118,7 +118,9 @@ describe('ProjectPilot AI Frontend Suite', () => {
     expect(await screen.findByTestId('metric-total-projects')).toHaveTextContent('3');
     expect(screen.getByTestId('metric-eligible')).toHaveTextContent('1');
     expect(screen.getByText('Payment Core Engine')).toBeInTheDocument();
-    expect(screen.getByText('65.5%')).toBeInTheDocument();
+    expect(screen.getAllByText('65.5%').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId('progress-ring-3d')).toBeInTheDocument();
+    expect(screen.getByTestId('ai-orb-assistant-trigger')).toBeInTheDocument();
   });
 
   it('displays project progress, handles task status updates, and renders AI assessments', async () => {

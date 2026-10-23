@@ -11,6 +11,8 @@ import {
 import { api } from '../../lib/api';
 import { AIHealthStatus, Assessment, Milestone, Project, Task, TaskStatus } from '../../types';
 import { StatusBadge } from '../../components/StatusBadge';
+import { MilestoneVisualizer3D } from '../../components/three/MilestoneVisualizer3D';
+import { TiltCard3D } from '../../components/three/TiltCard3D';
 
 export const AllTasksPage: React.FC = () => {
   const [items, setItems] = useState<Array<{ project: Project; task: Task }>>([]);
@@ -156,32 +158,36 @@ export const AllMilestonesPage: React.FC = () => {
           No milestones recorded yet.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {items.map(({ project, milestone }) => (
-            <Link
-              key={milestone.id}
-              to={`/projects/${project.id}?tab=milestones`}
-              className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 transition space-y-2 text-xs"
-            >
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm">{milestone.title}</span>
-                <div className="flex items-center gap-1.5">
-                  <StatusBadge status={milestone.is_required ? 'Required' : 'Optional'} />
-                  <StatusBadge status={milestone.status} />
-                </div>
-              </div>
-              <p className="text-slate-500">Project: {project.name}</p>
-              <div className="flex items-center gap-2">
-                <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-indigo-600"
-                    style={{ width: `${Math.min(100, milestone.computed_progress)}%` }}
-                  />
-                </div>
-                <span className="font-mono font-semibold">{milestone.computed_progress}%</span>
-              </div>
-            </Link>
-          ))}
+        <div className="space-y-6">
+          <MilestoneVisualizer3D milestones={items.map((i) => i.milestone)} />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {items.map(({ project, milestone }) => (
+              <TiltCard3D key={milestone.id} intensity={4}>
+                <Link
+                  to={`/projects/${project.id}?tab=milestones`}
+                  className="block p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-indigo-400 transition space-y-2 text-xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-sm">{milestone.title}</span>
+                    <div className="flex items-center gap-1.5">
+                      <StatusBadge status={milestone.is_required ? 'Required' : 'Optional'} />
+                      <StatusBadge status={milestone.status} />
+                    </div>
+                  </div>
+                  <p className="text-slate-500">Project: {project.name}</p>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-indigo-600 to-cyan-500"
+                        style={{ width: `${Math.min(100, milestone.computed_progress)}%` }}
+                      />
+                    </div>
+                    <span className="font-mono font-semibold">{milestone.computed_progress}%</span>
+                  </div>
+                </Link>
+              </TiltCard3D>
+            ))}
+          </div>
         </div>
       )}
     </div>

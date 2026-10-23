@@ -35,6 +35,7 @@ async def check_ai_health():
     available_models: list[str] = []
     ollama_reachable = False
     model_ready = False
+    active_model = configured_model
     error_detail = None
 
     try:
@@ -49,6 +50,10 @@ async def check_ai_health():
                     m == configured_model or m.startswith(f"{configured_model}:")
                     for m in available_models
                 )
+                # If configured model is not found but another local model is installed, auto-select it
+                if not model_ready and available_models:
+                    active_model = available_models[0]
+                    model_ready = True
             else:
                 error_detail = f"Ollama returned HTTP {resp.status_code}"
     except Exception as exc:
@@ -58,7 +63,7 @@ async def check_ai_health():
         "status": "available" if (ollama_reachable and model_ready) else ("model_missing" if ollama_reachable else "unavailable"),
         "ollama_reachable": ollama_reachable,
         "model_ready": model_ready,
-        "configured_model": configured_model,
+        "configured_model": active_model,
         "ollama_base_url": base_url,
         "available_models": available_models,
         "fallback_mode": "deterministic_rules_active",

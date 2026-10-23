@@ -36,6 +36,10 @@ import {
   VerificationStatus,
 } from '../../types';
 import { StatusBadge } from '../../components/StatusBadge';
+import { ProgressRing3D } from '../../components/three/ProgressRing3D';
+import { MilestoneVisualizer3D } from '../../components/three/MilestoneVisualizer3D';
+import { TiltCard3D } from '../../components/three/TiltCard3D';
+import { ScrollReveal } from '../../components/three/ScrollReveal';
 
 type TabKey = 'overview' | 'requirements' | 'tasks' | 'milestones' | 'evidence' | 'assessments';
 
@@ -217,11 +221,11 @@ export const ProjectDetailPage: React.FC = () => {
         confirm_completion: confirmCheck,
         completion_notes: completionNotes.trim(),
       });
+      await loadAll();
       setShowCompleteModal(false);
       setConfirmCheck(false);
       setCompletionNotes('');
       setBannerMessage('Project officially marked as Completed.');
-      await loadAll();
     } catch (err: any) {
       setError(err?.message || 'Project completion rejected by completion gate.');
     } finally {
@@ -555,29 +559,43 @@ export const ProjectDetailPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Authoritative Weighted Progress Bar */}
-        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs mb-1.5">
-            <span className="font-medium text-slate-600 dark:text-slate-300">
-              Authoritative Weighted Progress ({gate.completed_task_weight} / {gate.total_task_weight} weight units •{' '}
-              {gate.completed_tasks}/{gate.total_tasks} tasks Done)
-            </span>
-            <span className="font-mono font-bold text-sm" data-testid="project-progress-value">
-              {gate.progress_percentage}%
-            </span>
+        {/* Authoritative Weighted Progress Bar + 3D Progress Ring */}
+        <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col md:flex-row md:items-center gap-5">
+          <div className="flex-1">
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs mb-1.5">
+              <span className="font-medium text-slate-600 dark:text-slate-300">
+                Authoritative Weighted Progress ({gate.completed_task_weight} / {gate.total_task_weight} weight units •{' '}
+                {gate.completed_tasks}/{gate.total_tasks} tasks Done)
+              </span>
+              <span className="font-mono font-bold text-sm" data-testid="project-progress-value">
+                {gate.progress_percentage}%
+              </span>
+            </div>
+            <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+              <div
+                className={`h-full transition-all ${
+                  gate.eligible_for_completion
+                    ? 'bg-emerald-500'
+                    : 'bg-gradient-to-r from-indigo-600 via-cyan-500 to-purple-500'
+                }`}
+                style={{ width: `${Math.min(100, gate.progress_percentage)}%` }}
+              />
+            </div>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5">
+              Note: Weighted progress measures recorded task completion (100 × completed_weight / total_weight).
+              Final completion eligibility requires all mandatory requirements, milestones, and verified evidence checks to pass.
+            </p>
           </div>
-          <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className={`h-full transition-all ${
-                gate.eligible_for_completion ? 'bg-emerald-500' : 'bg-indigo-600'
-              }`}
-              style={{ width: `${Math.min(100, gate.progress_percentage)}%` }}
+
+          <div className="shrink-0 flex justify-center">
+            <ProgressRing3D
+              percentage={gate.progress_percentage}
+              label="Completion"
+              sublabel={`${gate.completed_tasks}/${gate.total_tasks} Tasks`}
+              size={128}
+              eligible={gate.eligible_for_completion}
             />
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
-            Note: Weighted progress measures recorded task completion (100 × completed_weight / total_weight).
-            Final completion eligibility requires all mandatory requirements, milestones, and verified evidence checks to pass.
-          </p>
         </div>
       </div>
 
@@ -1114,7 +1132,13 @@ export const ProjectDetailPage: React.FC = () => {
 
       {/* TAB 4: MILESTONES */}
       {activeTab === 'milestones' && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="space-y-6">
+          {milestones.length > 0 && (
+            <ScrollReveal>
+              <MilestoneVisualizer3D milestones={milestones} />
+            </ScrollReveal>
+          )}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm h-fit">
             <h2 className="text-base font-bold mb-1">Add Milestone</h2>
             <p className="text-xs text-slate-500 mb-3">
@@ -1226,6 +1250,7 @@ export const ProjectDetailPage: React.FC = () => {
                 </div>
               ))
             )}
+          </div>
           </div>
         </div>
       )}
