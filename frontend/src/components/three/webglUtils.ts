@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 let cachedWebGLSupport: boolean | null = null;
+let cachedIsSoftwareGL: boolean | null = null;
 
-export function isWebGLAvailable(): boolean {
+function probeWebGLOnce(): void {
   if (cachedWebGLSupport !== null) {
-    return cachedWebGLSupport;
+    return;
   }
   if (typeof window === 'undefined' || typeof document === 'undefined') {
     cachedWebGLSupport = false;
-    return false;
+    cachedIsSoftwareGL = true;
+    return;
   }
-  // In jsdom test environments, skip WebGL canvas creation so unit tests run fast and cleanly
   if (typeof navigator !== 'undefined' && /jsdom/i.test(navigator.userAgent || '')) {
     cachedWebGLSupport = false;
-    return false;
+    cachedIsSoftwareGL = true;
+    return;
   }
   try {
     const canvas = document.createElement('canvas');
@@ -21,12 +23,35 @@ export function isWebGLAvailable(): boolean {
       canvas.getContext('webgl2') ||
       canvas.getContext('webgl') ||
       canvas.getContext('experimental-webgl');
-    cachedWebGLSupport = Boolean(gl);
-    return cachedWebGLSupport;
+    if (!gl) {
+      cachedWebGLSupport = false;
+      cachedIsSoftwareGL = true;
+      return;
+    }
+    cachedWebGLSupport = true;
+    try {
+      const ext = (gl as any).getExtension('WEBGL_debug_renderer_info');
+      const param = ext ? ext.UNMASKED_RENDERER_WEBGL : (gl as any).RENDERER;
+      const gpu = String((gl as any).getParameter(param) || '');
+      cachedIsSoftwareGL = /SwiftShader|llvmpipe|softpipe|Software|Basic Render/i.test(gpu);
+      (gl as any).getExtension('WEBGL_lose_context')?.loseContext();
+    } catch {
+      cachedIsSoftwareGL = true;
+    }
   } catch {
     cachedWebGLSupport = false;
-    return false;
+    cachedIsSoftwareGL = true;
   }
+}
+
+export function isWebGLAvailable(): boolean {
+  probeWebGLOnce();
+  return Boolean(cachedWebGLSupport);
+}
+
+export function isSoftwareWebGL(): boolean {
+  probeWebGLOnce();
+  return Boolean(cachedIsSoftwareGL);
 }
 
 export function useReducedMotionPreference(): boolean {

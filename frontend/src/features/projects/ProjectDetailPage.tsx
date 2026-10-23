@@ -590,10 +590,14 @@ export const ProjectDetailPage: React.FC = () => {
           <div className="shrink-0 flex justify-center">
             <ProgressRing3D
               percentage={gate.progress_percentage}
-              label="Completion"
+              label="Deterministic"
               sublabel={`${gate.completed_tasks}/${gate.total_tasks} Tasks`}
               size={128}
               eligible={gate.eligible_for_completion}
+              tasks={tasks}
+              milestones={milestones}
+              completedWeight={gate.completed_task_weight}
+              totalWeight={gate.total_task_weight}
             />
           </div>
         </div>

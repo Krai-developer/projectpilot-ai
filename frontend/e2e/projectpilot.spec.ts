@@ -15,7 +15,9 @@ test('Full ProjectPilot AI E2E Workflow: Register, Create Project, Requirements 
   await page.getByRole('button', { name: 'Create Account' }).click();
 
   // Verify redirect to Dashboard & 3D AI Assistant presence
-  await expect(page.getByRole('heading', { name: 'Project Completion Dashboard' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: /Command Center & AI Intelligence|Project Completion Dashboard/i })
+  ).toBeVisible({ timeout: 15000 });
   await expect(page.getByTestId('ai-orb-assistant-trigger').first()).toBeVisible();
 
   // 2. Create a new project

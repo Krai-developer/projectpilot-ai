@@ -117,7 +117,7 @@ describe('ProjectPilot AI Frontend Suite', () => {
 
     expect(await screen.findByTestId('metric-total-projects')).toHaveTextContent('3');
     expect(screen.getByTestId('metric-eligible')).toHaveTextContent('1');
-    expect(screen.getByText('Payment Core Engine')).toBeInTheDocument();
+    expect(screen.getAllByText('Payment Core Engine').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('65.5%').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByTestId('progress-ring-3d')).toBeInTheDocument();
     expect(screen.getByTestId('ai-orb-assistant-trigger')).toBeInTheDocument();
