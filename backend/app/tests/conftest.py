@@ -1,4 +1,9 @@
+import os
 from typing import Generator
+
+# Always isolate unit tests from the production Supabase database in .env
+os.environ["DATABASE_URL"] = "sqlite://"
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, event

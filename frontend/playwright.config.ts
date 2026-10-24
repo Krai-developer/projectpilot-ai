@@ -24,6 +24,7 @@ export default defineConfig({
       reuseExistingServer: true,
       timeout: 30000,
       env: {
+        DATABASE_URL: 'sqlite:///./projectpilot_e2e.db',
         OLLAMA_TIMEOUT_SECONDS: '5',
       },
     },
