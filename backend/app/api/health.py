@@ -10,6 +10,16 @@ from app.core.database import get_db
 router = APIRouter(tags=["System Health"])
 
 
+@router.get("/")
+def root():
+    return {
+        "status": "online",
+        "service": "ProjectPilot AI API",
+        "health_endpoint": "/api/health",
+        "docs_endpoint": "/docs",
+    }
+
+
 @router.get("/api/health")
 def check_health(db: Session = Depends(get_db)):
     db_ok = False

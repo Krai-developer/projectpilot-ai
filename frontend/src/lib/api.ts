@@ -18,7 +18,12 @@ import {
   User,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+function resolveApiBaseUrl(): string {
+  const raw = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').trim().replace(/\/+$/, '');
+  return raw.endsWith('/api') ? raw : `${raw}/api`;
+}
+
+const API_BASE_URL = resolveApiBaseUrl();
 const TOKEN_STORAGE_KEY = 'projectpilot_auth_token';
 
 export function getStoredToken(): string | null {
