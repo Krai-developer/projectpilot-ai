@@ -166,6 +166,7 @@ export class CockpitSceneController {
 
     this.camera = new THREE.PerspectiveCamera(42, width / height, 0.1, 120);
     this.camera.position.set(0, 5.2, 10.4);
+    this.applyCameraFraming(width, height);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = !this.isSoftwareGl;
@@ -1003,12 +1004,22 @@ export class CockpitSceneController {
     canvas.addEventListener('pointerup', this.onPointerUp);
   }
 
+  private applyCameraFraming(w: number, h: number) {
+    this.camera.aspect = w / h;
+    if (w >= 1024) {
+      // Shift optical center to the left side so the globe sits on the left while the 3D floor spans 100% width seamlessly
+      this.camera.setViewOffset(w, h, Math.round(w * 0.19), 0, w, h);
+    } else {
+      this.camera.clearViewOffset();
+    }
+    this.camera.updateProjectionMatrix();
+  }
+
   private onResize = () => {
     if (this.isDisposed) return;
     const w = Math.max(this.container.clientWidth, 1);
     const h = Math.max(this.container.clientHeight, 1);
-    this.camera.aspect = w / h;
-    this.camera.updateProjectionMatrix();
+    this.applyCameraFraming(w, h);
     this.renderer.setSize(w, h);
   };
 
