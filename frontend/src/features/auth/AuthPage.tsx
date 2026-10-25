@@ -1,21 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   AlertCircle,
   ArrowRight,
-  CheckCircle2,
-  Cpu,
-  Database,
+  Check,
   Eye,
   EyeOff,
-  Layers,
+  FolderKanban,
   Loader2,
   Lock,
   Mail,
-  ShieldCheck,
-  Sparkles,
   User as UserIcon,
-  Zap,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -41,20 +36,6 @@ export const AuthPage: React.FC = () => {
     }, 2500);
     return () => window.clearTimeout(timer);
   }, [submitting]);
-
-  const passwordStrength = useMemo(() => {
-    if (!password) return { score: 0, label: 'Enter 8+ characters', color: 'bg-slate-200 dark:bg-slate-700' };
-    let score = 0;
-    if (password.length >= 8) score += 1;
-    if (password.length >= 12) score += 1;
-    if (/[A-Z]/.test(password) && /[0-9]/.test(password)) score += 1;
-    if (/[^A-Za-z0-9]/.test(password)) score += 1;
-
-    if (score <= 1) return { score: 1, label: 'Weak', color: 'bg-rose-500' };
-    if (score === 2) return { score: 2, label: 'Fair', color: 'bg-amber-500' };
-    if (score === 3) return { score: 3, label: 'Good', color: 'bg-cyan-500' };
-    return { score: 4, label: 'Strong', color: 'bg-emerald-500' };
-  }, [password]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,160 +68,81 @@ export const AuthPage: React.FC = () => {
   const handleFillDemo = () => {
     setError(null);
     setMode('register');
-    setFullName('Alex Mercer (Pilot Lead)');
-    setEmail(`pilot.demo.${Math.floor(1000 + Math.random() * 9000)}@projectpilot.ai`);
-    setPassword('PilotCockpit2026!');
+    setFullName('Alex Mercer');
+    setEmail(`demo.${Math.floor(1000 + Math.random() * 9000)}@example.com`);
+    setPassword('DemoWorkspace123!');
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 sm:p-6 lg:p-10 bg-[#070d1f] text-slate-900 dark:text-slate-100 overflow-hidden">
-      {/* Ambient 3D Cockpit Radial Lighting & Telemetry Grid */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <div className="absolute -top-40 -left-40 w-[34rem] h-[34rem] rounded-full bg-cyan-500/15 blur-[130px]" />
-        <div className="absolute -bottom-40 -right-40 w-[36rem] h-[36rem] rounded-full bg-indigo-600/20 blur-[140px]" />
-        <div
-          className="absolute inset-0 opacity-[0.06]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right, #38bdf8 1px, transparent 1px), linear-gradient(to bottom, #38bdf8 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
-          }}
-        />
-      </div>
-
-      {/* Main Split-Screen Container */}
-      <div className="relative z-10 w-full max-w-5xl grid grid-cols-1 lg:grid-cols-12 rounded-3xl overflow-hidden border border-white/10 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.7)] bg-[#0a1128]/90 backdrop-blur-xl">
-        {/* Left Column: 3D Intelligent Cockpit Showcase */}
-        <div className="lg:col-span-6 p-8 sm:p-10 lg:p-12 flex flex-col justify-between bg-gradient-to-br from-[#0a1128] via-[#0d1836] to-[#111c44] text-white border-b lg:border-b-0 lg:border-r border-slate-800/80 relative overflow-hidden">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-20 -top-20 w-72 h-72 rounded-full bg-cyan-500/10 blur-3xl"
-          />
-
+    <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 bg-slate-950 text-slate-100">
+      <div className="w-full max-w-4xl grid grid-cols-1 md:grid-cols-12 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900 shadow-2xl">
+        {/* Left Column: Clean, Understated Product Context */}
+        <div className="md:col-span-5 p-7 sm:p-8 flex flex-col justify-between bg-[#0a1128] border-b md:border-b-0 md:border-r border-slate-800/80">
           <div>
-            {/* Brand Header */}
-            <div className="flex items-center gap-3.5 mb-8">
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/25 ring-1 ring-white/20">
-                <Sparkles className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-2.5 mb-8">
+              <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center text-slate-950">
+                <FolderKanban className="w-4 h-4 stroke-[2.2]" />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg font-bold tracking-tight text-white">
-                    ProjectPilot AI
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-400/25">
-                    v2.4 Cockpit
-                  </span>
-                </div>
-                <p className="text-[11px] text-cyan-400/90 font-medium tracking-wide">
-                  3D Intelligent Cockpit & Deterministic Control
-                </p>
-              </div>
+              <span className="text-base font-semibold tracking-tight text-white">
+                ProjectPilot
+              </span>
             </div>
 
-            {/* Hero Copy */}
-            <div className="space-y-3 mb-8">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[11px] font-semibold text-cyan-300">
-                <Zap className="w-3.5 h-3.5 text-cyan-400" />
-                <span>DETERMINISTIC PROJECT CONTROL</span>
-              </div>
-              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
-                Your Project. Your Control.{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">
-                  With AI.
-                </span>
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-300/90 leading-relaxed">
-                Eliminate guesswork in software delivery. Combine strict mathematical completion gates
-                with an interactive 3D telemetry workspace and hybrid AI readiness assessments.
-              </p>
-            </div>
+            <h2 className="text-xl sm:text-2xl font-semibold tracking-tight text-white leading-snug mb-3">
+              Keep projects moving from first task to final sign-off.
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 leading-relaxed mb-6">
+              Organize requirements, track task progress, and review release checklists in one
+              shared workspace.
+            </p>
 
-            {/* Feature Highlights */}
-            <div className="space-y-3.5">
-              <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-cyan-500/30 transition-colors">
-                <div className="p-2 rounded-xl bg-cyan-500/15 text-cyan-400 shrink-0 mt-0.5">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-white">
-                    Deterministic Completion Quality Gates
-                  </h3>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
-                    Projects only unlock completion when 100% of required tasks, mandatory requirements,
-                    and verification evidence pass.
-                  </p>
-                </div>
+            {/* Minimal, realistic project preview card instead of buzzword boxes */}
+            <div className="rounded-xl bg-slate-900/90 border border-slate-800 p-4 space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-medium text-slate-200">Release Checklist</span>
+                <span className="text-emerald-400 font-medium">3 of 3 ready</span>
               </div>
-
-              <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-indigo-500/30 transition-colors">
-                <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 shrink-0 mt-0.5">
-                  <Layers className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-white">
-                    3D Hologram Ring & Interactive AI Orb
-                  </h3>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
-                    Real-time Three.js PBR visualization of weighted task ratios, milestone cones, and
-                    guided AI status scans.
-                  </p>
-                </div>
+              <div className="w-full h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                <div className="h-full w-full bg-emerald-500 rounded-full" />
               </div>
-
-              <div className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white/[0.04] border border-white/[0.08] hover:border-emerald-500/30 transition-colors">
-                <div className="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 shrink-0 mt-0.5">
-                  <Cpu className="w-4 h-4" />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-white">
-                    Zero-Cost Hybrid AI Architecture
-                  </h3>
-                  <p className="text-[11px] text-slate-400 leading-relaxed mt-0.5">
-                    Seamlessly switches between local Ollama LLM inference and deterministic cloud
-                    readiness analysis with zero API fees.
-                  </p>
-                </div>
-              </div>
+              <ul className="space-y-2 pt-1 text-xs text-slate-300">
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Core requirements linked to tasks</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>All blocker items resolved</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <span>Release notes & verification attached</span>
+                </li>
+              </ul>
             </div>
           </div>
 
-          {/* Architecture Trust Pills */}
-          <div className="mt-8 pt-6 border-t border-slate-800/80 flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-medium text-slate-300">
-              <Lock className="w-3 h-3 text-cyan-400" />
-              Argon2id Auth
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-medium text-slate-300">
-              <Database className="w-3 h-3 text-emerald-400" />
-              Supabase Cloud DB
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900/90 border border-slate-800 text-[11px] font-medium text-slate-300">
-              <CheckCircle2 className="w-3 h-3 text-indigo-400" />
-              Deterministic + AI Core
-            </span>
-          </div>
+          <p className="mt-6 text-[11px] text-slate-500">
+            Workspace data is synced to your project database.
+          </p>
         </div>
 
-        {/* Right Column: Elevated Form Card */}
-        <div className="lg:col-span-6 p-8 sm:p-10 lg:p-12 bg-white dark:bg-slate-900 flex flex-col justify-center">
-          <div className="mb-6">
-            <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              {mode === 'login' ? 'Welcome back' : 'Create your workspace'}
+        {/* Right Column: Clean Sign-In Form */}
+        <div className="md:col-span-7 p-7 sm:p-9 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col justify-center">
+          <div className="mb-5">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+              {mode === 'login' ? 'Sign in to your account' : 'Create an account'}
             </h1>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
               {mode === 'login'
-                ? 'Sign in to access your 3D Intelligent Cockpit and active projects.'
-                : 'Register a new account to start tracking projects with deterministic AI gates.'}
+                ? 'Enter your email and password to open your workspace.'
+                : 'Set up your profile to start managing projects.'}
             </p>
           </div>
 
-          {/* Segmented Tab Switcher */}
+          {/* Tab Switcher */}
           <div
-            className="grid grid-cols-2 rounded-xl bg-slate-100 dark:bg-slate-800/90 p-1 mb-6 border border-slate-200/70 dark:border-slate-700/60"
+            className="grid grid-cols-2 rounded-lg bg-slate-100 dark:bg-slate-800 p-1 mb-5"
             role="tablist"
           >
             <button
@@ -251,9 +153,9 @@ export const AuthPage: React.FC = () => {
                 setMode('login');
                 setError(null);
               }}
-              className={`py-2.5 text-xs font-bold rounded-lg transition-all ${
+              className={`py-2 text-xs font-semibold rounded-md transition ${
                 mode === 'login'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -267,9 +169,9 @@ export const AuthPage: React.FC = () => {
                 setMode('register');
                 setError(null);
               }}
-              className={`py-2.5 text-xs font-bold rounded-lg transition-all ${
+              className={`py-2 text-xs font-semibold rounded-md transition ${
                 mode === 'register'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200/80 dark:ring-slate-700'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -277,37 +179,35 @@ export const AuthPage: React.FC = () => {
             </button>
           </div>
 
-          {/* Validation / Server Error Alert */}
           {error && (
             <div
               role="alert"
-              className="mb-5 p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 flex items-start gap-2.5 text-xs text-rose-700 dark:text-rose-300"
+              className="mb-4 p-3 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 flex items-start gap-2 text-xs text-rose-700 dark:text-rose-300"
             >
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
-              <span className="leading-relaxed font-medium">{error}</span>
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>{error}</span>
             </div>
           )}
 
-          {/* Authentication Form */}
-          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-3.5" noValidate>
             {mode === 'register' && (
               <div>
                 <label
                   htmlFor="full-name"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+                  className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
                 >
                   Full Name
                 </label>
                 <div className="relative">
-                  <UserIcon className="h-4 w-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                  <UserIcon className="h-4 w-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
                   <input
                     id="full-name"
                     type="text"
                     autoComplete="name"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Ada Lovelace"
-                    className="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/90 text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 transition-all"
+                    placeholder="Alex Mercer"
+                    className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                   />
                 </div>
               </div>
@@ -316,93 +216,64 @@ export const AuthPage: React.FC = () => {
             <div>
               <label
                 htmlFor="email"
-                className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
               >
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="h-4 w-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <Mail className="h-4 w-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
                 <input
                   id="email"
                   type="email"
                   required
                   autoComplete="email"
-                  aria-invalid={Boolean(error && error.toLowerCase().includes('email'))}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="developer@example.com"
-                  className="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/90 text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 transition-all"
+                  placeholder="name@company.com"
+                  className="w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                 />
               </div>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label
-                  htmlFor="password"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300"
-                >
-                  Password (minimum 8 characters)
-                </label>
-                <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500">
-                  Min. 8 chars
-                </span>
-              </div>
+              <label
+                htmlFor="password"
+                className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1"
+              >
+                Password (minimum 8 characters)
+              </label>
               <div className="relative">
-                <Lock className="h-4 w-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <Lock className="h-4 w-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   required
                   autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-                  aria-invalid={Boolean(error && error.toLowerCase().includes('8 characters'))}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-10 pr-10 py-2.5 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/90 text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-cyan-500/30 focus:border-cyan-500 transition-all"
+                  placeholder="••••••••"
+                  className="w-full pl-9 pr-9 py-2 text-sm rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-sky-500/30 focus:border-sky-500 transition"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? 'Hide characters' : 'Reveal characters'}
-                  className="absolute right-2.5 top-2 p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700/60 transition-colors"
+                  className="absolute right-2.5 top-2 p-1 rounded text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-
-              {/* Password Strength Meter in Register Mode */}
-              {mode === 'register' && (
-                <div className="mt-2.5 space-y-1">
-                  <div className="grid grid-cols-4 gap-1.5">
-                    {[1, 2, 3, 4].map((level) => (
-                      <div
-                        key={level}
-                        className={`h-1 rounded-full transition-colors ${
-                          passwordStrength.score >= level
-                            ? passwordStrength.color
-                            : 'bg-slate-200 dark:bg-slate-700'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 flex justify-between">
-                    <span>Password strength</span>
-                    <span className="font-semibold">{passwordStrength.label}</span>
-                  </p>
-                </div>
-              )}
             </div>
 
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 active:scale-[0.99] disabled:opacity-60 text-white font-semibold text-sm transition-all shadow-lg shadow-cyan-900/20 flex items-center justify-center gap-2"
+              className="w-full py-2.5 px-4 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-sky-500 dark:hover:bg-sky-400 dark:text-slate-950 disabled:opacity-50 text-white font-semibold text-sm transition flex items-center justify-center gap-2"
             >
               {submitting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Processing...</span>
+                  <span>Signing in...</span>
                 </>
               ) : (
                 <>
@@ -413,24 +284,20 @@ export const AuthPage: React.FC = () => {
             </button>
 
             {slowRequestHint && (
-              <p className="text-[11px] text-center text-cyan-600 dark:text-cyan-400 animate-pulse">
-                Waking up cloud server & verifying credentials — this takes ~15s on first load...
+              <p className="text-[11px] text-center text-slate-500 dark:text-slate-400">
+                Connecting to server — first request may take a few seconds...
               </p>
             )}
           </form>
 
-          {/* Quick Demo Fill for Portfolio Reviewers */}
-          <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <span className="text-xs text-slate-500 dark:text-slate-400">
-              Exploring the portfolio demo?
-            </span>
+          <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <span>Just testing the app?</span>
             <button
               type="button"
               onClick={handleFillDemo}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-cyan-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-cyan-700 dark:text-slate-200 text-xs font-semibold border border-slate-200/80 dark:border-slate-700 transition-colors"
+              className="font-semibold text-slate-800 dark:text-sky-400 hover:underline"
             >
-              <Sparkles className="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" />
-              <span>Fill Demo Account</span>
+              Use demo credentials
             </button>
           </div>
         </div>
