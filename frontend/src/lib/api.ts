@@ -17,6 +17,7 @@ import {
   TokenResponse,
   User,
 } from '../types';
+import { handleOfflineRequest } from './offlineFallback';
 
 function resolveApiBaseUrl(): string {
   const raw = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').trim().replace(/\/+$/, '');
@@ -61,10 +62,15 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...options,
-    headers,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}${path}`, {
+      ...options,
+      headers,
+    });
+  } catch {
+    return handleOfflineRequest<T>(path, options);
+  }
 
   if (response.status === 204) {
     return undefined as unknown as T;

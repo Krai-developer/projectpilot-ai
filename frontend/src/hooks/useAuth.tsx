@@ -49,15 +49,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await api.login({ email, password });
-    setStoredToken(res.access_token);
-    setUser(res.user);
+    try {
+      const res = await api.login({ email, password });
+      setStoredToken(res.access_token);
+      setUser(res.user);
+    } catch (err: any) {
+      if (err?.status === 401) {
+        try {
+          const regRes = await api.register({
+            email,
+            password,
+            full_name: email.split('@')[0],
+          });
+          setStoredToken(regRes.access_token);
+          setUser(regRes.user);
+          return;
+        } catch (regErr: any) {
+          if (regErr?.status === 409) {
+            throw err;
+          }
+          throw regErr;
+        }
+      }
+      throw err;
+    }
   };
 
   const register = async (email: string, password: string, fullName: string) => {
-    const res = await api.register({ email, password, full_name: fullName });
-    setStoredToken(res.access_token);
-    setUser(res.user);
+    try {
+      const res = await api.register({ email, password, full_name: fullName });
+      setStoredToken(res.access_token);
+      setUser(res.user);
+    } catch (err: any) {
+      if (err?.status === 409) {
+        const loginRes = await api.login({ email, password });
+        setStoredToken(loginRes.access_token);
+        setUser(loginRes.user);
+        return;
+      }
+      throw err;
+    }
   };
 
   const logout = async () => {

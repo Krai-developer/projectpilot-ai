@@ -88,24 +88,16 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const handleFillDemo = () => {
-    setError(null);
-    setMode('register');
-    setFullName('Alex Mercer');
-    setEmail(`demo.${Math.floor(1000 + Math.random() * 9000)}@example.com`);
-    setPassword('DemoWorkspace123!');
-  };
-
   return (
     <div className="relative min-h-screen w-full bg-[#030914] text-slate-100 overflow-hidden flex flex-col lg:flex-row">
-      {/* Full-Viewport Seamless 3D Cockpit Canvas (framed to the left on desktop so the 3D floor continues under the right panel with zero seam) */}
+      {/* Full-Viewport Seamless 3D Cockpit Canvas */}
       <div
         ref={canvasMountRef}
         className="relative lg:fixed lg:inset-0 w-full h-[340px] sm:h-[420px] lg:h-full z-0 select-none"
         aria-label="Interactive 3D Viewport"
       />
 
-      {/* Soft Right-Side Atmospheric Vignette (blends 3D floor into the right sign-in area without a harsh line) */}
+      {/* Soft Right-Side Atmospheric Vignette */}
       <div
         aria-hidden="true"
         className="hidden lg:block pointer-events-none fixed inset-y-0 right-0 w-[52%] z-0 bg-gradient-to-l from-[#030914]/90 via-[#030914]/55 to-transparent"
@@ -117,7 +109,7 @@ export const AuthPage: React.FC = () => {
       {/* Right Side: Translucent Holographic Glassmorphic Sign-In Card */}
       <div className="relative z-10 w-full lg:w-[44%] flex items-center justify-center p-6 sm:p-10 lg:pr-14 pointer-events-none">
         <div className="relative w-full max-w-md pointer-events-auto">
-          {/* Ambient Cyan & Violet Backlight Glow matching the 3D Orb */}
+          {/* Ambient Cyan & Violet Backlight Glow */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute -inset-3 rounded-[28px] bg-gradient-to-tr from-cyan-500/20 via-sky-500/10 to-purple-500/20 blur-2xl opacity-80"
@@ -135,21 +127,14 @@ export const AuthPage: React.FC = () => {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-400 to-indigo-600 flex items-center justify-center text-slate-950 shadow-lg shadow-cyan-500/25 ring-1 ring-white/20">
                 <FolderKanban className="w-5 h-5 stroke-[2.2] text-white" />
               </div>
-              <div>
-                <h1 className="text-lg font-bold tracking-tight text-white leading-tight">
-                  ProjectPilot
-                </h1>
-                <p className="text-xs text-cyan-300/75">
-                  {mode === 'login'
-                    ? 'Sign in to open your workspace'
-                    : 'Create your workspace account'}
-                </p>
-              </div>
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                ProjectPilot
+              </h1>
             </div>
 
-            {/* Glass Segmented Tab Switcher */}
+            {/* Clean Segmented Tab Switcher */}
             <div
-              className="grid grid-cols-2 rounded-xl bg-[#030914]/80 border border-slate-800/90 p-1 mb-6"
+              className="grid grid-cols-2 rounded-xl bg-[#030914]/90 border border-slate-800 p-1 mb-6"
               role="tablist"
             >
               <button
@@ -160,9 +145,9 @@ export const AuthPage: React.FC = () => {
                   setMode('login');
                   setError(null);
                 }}
-                className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                className={`py-2.5 text-xs font-semibold rounded-lg transition-all ${
                   mode === 'login'
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-400/30 shadow-sm'
+                    ? 'bg-slate-800 text-white shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -176,9 +161,9 @@ export const AuthPage: React.FC = () => {
                   setMode('register');
                   setError(null);
                 }}
-                className={`py-2 text-xs font-semibold rounded-lg transition-all ${
+                className={`py-2.5 text-xs font-semibold rounded-lg transition-all ${
                   mode === 'register'
-                    ? 'bg-gradient-to-r from-cyan-500/20 to-indigo-500/20 text-cyan-300 border border-cyan-400/30 shadow-sm'
+                    ? 'bg-slate-800 text-white shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -296,17 +281,6 @@ export const AuthPage: React.FC = () => {
                 </p>
               )}
             </form>
-
-            <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-              <span>Just testing the app?</span>
-              <button
-                type="button"
-                onClick={handleFillDemo}
-                className="font-semibold text-cyan-400 hover:text-cyan-300 hover:underline transition-colors"
-              >
-                Use demo credentials
-              </button>
-            </div>
           </div>
         </div>
       </div>
