@@ -36,6 +36,7 @@ export interface CockpitSceneCallbacks {
       phaseError: number;
       gimbalPitch: number;
       gimbalRoll: number;
+      isExpanded?: boolean;
     }
   ) => void;
 }
@@ -743,7 +744,7 @@ export class CockpitSceneController {
 
     this.createSubsystemProxy(
       'core-globe',
-      new THREE.SphereGeometry(1.62, 24, 24),
+      new THREE.SphereGeometry(1.82, 24, 24),
       new THREE.Vector3(0, 0, 0),
       this.coreAssemblyGroup
     );
@@ -1077,6 +1078,7 @@ export class CockpitSceneController {
       this.setExplosionFactor(0);
       this.setControlMode('nominal');
       this.setCameraPreset('cockpit');
+      this.callbacks.onSubsystemSelect(null);
     }
   };
 
@@ -1284,8 +1286,8 @@ export class CockpitSceneController {
 
       this.callbacks.onAnchorsUpdate(
         {
-          leftTelemetry: projectAnchor(this.anchorLeft3D, exp * 0.65),
-          rightEquation: projectAnchor(this.anchorRight3D, exp * 0.65),
+          leftTelemetry: projectAnchor(this.leftConstellationGroup.position, 0.35),
+          rightEquation: projectAnchor(this.rightConstellationGroup.position, 0.35),
           bottomEquation: projectAnchor(this.anchorBottom3D, exp * 0.2),
           coreCenter: projectAnchor(this.anchorCore3D, exp * 1.45),
         },
@@ -1300,6 +1302,7 @@ export class CockpitSceneController {
           gimbalRoll: Number(
             THREE.MathUtils.radToDeg(this.cyanTelemetryGroup.rotation.z).toFixed(1)
           ),
+          isExpanded: this.targetExplosion > 0.2,
         }
       );
     }

@@ -19,6 +19,9 @@ export const AuthPage: React.FC = () => {
   const { login, register } = useAuth();
   const navigate = useNavigate();
   const canvasMountRef = useRef<HTMLDivElement | null>(null);
+  const leftCalloutRef = useRef<HTMLDivElement | null>(null);
+  const rightCalloutRef = useRef<HTMLDivElement | null>(null);
+  const [globePressed, setGlobePressed] = useState(false);
 
   const [mode, setMode] = useState<'login' | 'register'>('login');
   const [email, setEmail] = useState('');
@@ -38,7 +41,28 @@ export const AuthPage: React.FC = () => {
       controller = new CockpitSceneController(container, {
         onSubsystemSelect: () => {},
         onSubsystemHover: () => {},
-        onAnchorsUpdate: () => {},
+        onAnchorsUpdate: (anchors, liveStats) => {
+          const expanded = Boolean(liveStats.isExpanded);
+          setGlobePressed((prev) => (prev !== expanded ? expanded : prev));
+
+          if (leftCalloutRef.current) {
+            leftCalloutRef.current.style.transform = `translate3d(${Math.round(
+              anchors.leftTelemetry.x
+            )}px, ${Math.round(anchors.leftTelemetry.y)}px, 0) translate(-50%, -50%)`;
+            leftCalloutRef.current.style.visibility = anchors.leftTelemetry.visible
+              ? 'visible'
+              : 'hidden';
+          }
+
+          if (rightCalloutRef.current) {
+            rightCalloutRef.current.style.transform = `translate3d(${Math.round(
+              anchors.rightEquation.x
+            )}px, ${Math.round(anchors.rightEquation.y)}px, 0) translate(-50%, -50%)`;
+            rightCalloutRef.current.style.visibility = anchors.rightEquation.visible
+              ? 'visible'
+              : 'hidden';
+          }
+        },
       });
     } catch {
       controller = null;
@@ -96,6 +120,58 @@ export const AuthPage: React.FC = () => {
         className="relative lg:fixed lg:inset-0 w-full h-[340px] sm:h-[420px] lg:h-full z-0 select-none"
         aria-label="Interactive 3D Viewport"
       />
+
+      {/* 3D Constellation Pop-Up Callouts (Triggered When Globe Is Pressed) */}
+      <div
+        aria-live="polite"
+        className="pointer-events-none absolute top-0 left-0 lg:fixed lg:inset-0 w-full h-[340px] sm:h-[420px] lg:h-full z-[5] overflow-hidden"
+      >
+        {/* Left Constellation Callout (Yellow Circle Area): "Your Project" */}
+        <div
+          ref={leftCalloutRef}
+          style={{ left: 0, top: 0, visibility: 'hidden' }}
+          className="absolute will-change-transform"
+        >
+          <div
+            className={`transition-all duration-500 ease-out ${
+              globePressed
+                ? 'opacity-100 scale-100 translate-y-0'
+                : 'opacity-0 scale-75 translate-y-3'
+            }`}
+          >
+            <div className="relative px-4 py-2 rounded-full border border-cyan-400/50 bg-[#051329]/85 backdrop-blur-xl shadow-[0_0_30px_rgba(34,211,238,0.4)] flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping absolute left-4" />
+              <span className="w-2 h-2 rounded-full bg-cyan-300 relative" />
+              <span className="text-xs sm:text-sm font-bold tracking-wide text-cyan-100 whitespace-nowrap drop-shadow-[0_0_10px_rgba(34,211,238,0.6)]">
+                Your Project
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Constellation Callout (Red Circle Area): "Is Our Progress" */}
+        <div
+          ref={rightCalloutRef}
+          style={{ left: 0, top: 0, visibility: 'hidden' }}
+          className="absolute will-change-transform"
+        >
+          <div
+            className={`transition-all duration-500 delay-75 ease-out ${
+              globePressed
+                ? 'opacity-100 scale-100 translate-y-0'
+                : 'opacity-0 scale-75 translate-y-3'
+            }`}
+          >
+            <div className="relative px-4 py-2 rounded-full border border-purple-400/50 bg-[#0d102b]/85 backdrop-blur-xl shadow-[0_0_30px_rgba(168,85,247,0.4)] flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping absolute left-4" />
+              <span className="w-2 h-2 rounded-full bg-purple-300 relative" />
+              <span className="text-xs sm:text-sm font-bold tracking-wide text-purple-100 whitespace-nowrap drop-shadow-[0_0_10px_rgba(168,85,247,0.6)]">
+                Is Our Progress
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Soft Right-Side Atmospheric Vignette */}
       <div
