@@ -13,7 +13,7 @@ import {
   User,
 } from '../types';
 
-const STORAGE_KEY = 'projectpilot_offline_store_v1';
+const STORAGE_KEY = 'projectpilot_offline_store_v2';
 
 interface OfflineStore {
   users: (User & { password?: string })[];
@@ -38,6 +38,7 @@ function createInitialStore(): OfflineStore {
     email: 'pilot@projectpilot.ai',
     full_name: 'Alex Mercer',
     created_at: now,
+    updated_at: now,
   };
 
   const demoProject: Project = {
@@ -47,57 +48,49 @@ function createInitialStore(): OfflineStore {
     description:
       'Real-time 3D telemetry ingestion, deterministic flight safety cutoff verification, and AI readiness gating.',
     objectives: 'Achieve <5ms packet latency and 100% mandatory safety gate verification.',
-    category: 'Aerospace & AI Systems',
-    target_completion_date: '2026-12-15',
+    completion_criteria: 'All mandatory requirements satisfied and verified.',
     status: 'In Progress',
+    priority: 'High',
+    start_date: '2026-10-01',
+    deadline: '2026-12-15',
     progress_percentage: 62.5,
+    readiness_status: 'In Progress',
+    eligible_for_completion: false,
     total_tasks: 4,
     completed_tasks: 2,
     blocked_tasks: 0,
-    total_requirements: 2,
-    covered_requirements: 2,
-    completed_weight: 10,
-    total_weight: 16,
-    can_mark_complete: false,
-    confirmed_by_user: false,
-    completion_notes: null,
-    completed_at: null,
+    overdue_tasks: 0,
     created_at: now,
     updated_at: now,
+    completed_at: null,
   };
 
   const requirements: Requirement[] = [
     {
       id: 1,
       project_id: 1,
-      code: 'REQ-01',
       title: 'Sub-5ms Telemetry Stream Processing',
       description: 'Ingest and validate high-frequency sensor frames with zero dropped packets.',
-      category: 'Performance',
-      priority: 'Critical',
       is_mandatory: true,
       acceptance_criteria: 'Sustained 1,000 Hz frame validation under load.',
-      is_covered: true,
+      verification_notes: 'Verified via benchmark stress suite.',
+      status: 'Satisfied',
       linked_task_ids: [1, 2],
-      completed_task_count: 2,
-      total_task_count: 2,
       created_at: now,
+      updated_at: now,
     },
     {
       id: 2,
       project_id: 1,
-      code: 'REQ-02',
       title: 'Deterministic Emergency Cutoff Interlock',
       description: 'Hardware-in-the-loop safety cutoff must trigger within 2ms of anomaly detection.',
-      category: 'Safety',
-      priority: 'Critical',
       is_mandatory: true,
       acceptance_criteria: 'Verified cutoff log attached as task evidence.',
-      is_covered: true,
+      verification_notes: '',
+      status: 'In Progress',
       linked_task_ids: [3, 4],
-      completed_task_count: 0,
-      total_task_count: 2,
       created_at: now,
+      updated_at: now,
     },
   ];
 
@@ -105,27 +98,42 @@ function createInitialStore(): OfflineStore {
     {
       id: 1,
       project_id: 1,
-      name: 'Phase 1: Core Telemetry Pipeline',
+      title: 'Phase 1: Core Telemetry Pipeline',
       description: 'Complete ingestion engine and ring-buffer validation.',
-      sequence_order: 1,
-      target_date: '2026-11-15',
+      due_date: '2026-11-15',
+      is_required: true,
       status: 'Completed',
-      progress_percentage: 100,
+      computed_progress: 100,
       total_tasks: 2,
       completed_tasks: 2,
       created_at: now,
+      updated_at: now,
     },
     {
       id: 2,
       project_id: 1,
-      name: 'Phase 2: Safety Interlock Certification',
+      title: 'Phase 2: Safety Interlock Certification',
       description: 'Verify emergency cutoff handler and attach formal test logs.',
-      sequence_order: 2,
-      target_date: '2026-12-15',
+      due_date: '2026-12-15',
+      is_required: true,
       status: 'In Progress',
-      progress_percentage: 0,
+      computed_progress: 0,
       total_tasks: 2,
       completed_tasks: 0,
+      created_at: now,
+      updated_at: now,
+    },
+  ];
+
+  const evidence: Evidence[] = [
+    {
+      id: 1,
+      task_id: 1,
+      evidence_type: 'test_result',
+      description: '10M Frame Stress Benchmark Log',
+      uri: 'https://telemetry.projectpilot.local/reports/bench-01',
+      verification_status: 'verified',
+      verified_at: now,
       created_at: now,
     },
   ];
@@ -140,14 +148,14 @@ function createInitialStore(): OfflineStore {
       status: 'Done',
       priority: 'High',
       weight: 5,
-      is_required_for_completion: true,
-      is_blocked: false,
-      blocker_reason: null,
-      acceptance_criteria: 'Passes 10M frame stress test.',
+      estimated_hours: 8,
+      actual_hours: 7,
       due_date: '2026-11-05',
-      assignee: 'Alex Mercer',
+      notes: 'Passes 10M frame stress test.',
       requirement_ids: [1],
-      evidence_count: 1,
+      dependency_ids: [],
+      incomplete_prerequisite_ids: [],
+      evidence_items: [evidence[0]],
       completed_at: now,
       created_at: now,
       updated_at: now,
@@ -161,14 +169,14 @@ function createInitialStore(): OfflineStore {
       status: 'Done',
       priority: 'High',
       weight: 5,
-      is_required_for_completion: true,
-      is_blocked: false,
-      blocker_reason: null,
-      acceptance_criteria: 'Phase drift < 0.05 deg.',
+      estimated_hours: 6,
+      actual_hours: 6,
       due_date: '2026-11-12',
-      assignee: 'Alex Mercer',
+      notes: 'Phase drift < 0.05 deg.',
       requirement_ids: [1],
-      evidence_count: 1,
+      dependency_ids: [],
+      incomplete_prerequisite_ids: [],
+      evidence_items: [],
       completed_at: now,
       created_at: now,
       updated_at: now,
@@ -182,14 +190,14 @@ function createInitialStore(): OfflineStore {
       status: 'In Progress',
       priority: 'Critical',
       weight: 4,
-      is_required_for_completion: true,
-      is_blocked: false,
-      blocker_reason: null,
-      acceptance_criteria: 'Verified under fault injection.',
+      estimated_hours: 10,
+      actual_hours: 4,
       due_date: '2026-12-01',
-      assignee: 'Alex Mercer',
+      notes: 'Verified under fault injection.',
       requirement_ids: [2],
-      evidence_count: 0,
+      dependency_ids: [],
+      incomplete_prerequisite_ids: [],
+      evidence_items: [],
       completed_at: null,
       created_at: now,
       updated_at: now,
@@ -203,31 +211,17 @@ function createInitialStore(): OfflineStore {
       status: 'To Do',
       priority: 'High',
       weight: 2,
-      is_required_for_completion: true,
-      is_blocked: false,
-      blocker_reason: null,
-      acceptance_criteria: 'Report linked in task evidence.',
+      estimated_hours: 4,
+      actual_hours: 0,
       due_date: '2026-12-10',
-      assignee: 'Alex Mercer',
+      notes: 'Report linked in task evidence.',
       requirement_ids: [2],
-      evidence_count: 0,
+      dependency_ids: [],
+      incomplete_prerequisite_ids: [],
+      evidence_items: [],
       completed_at: null,
       created_at: now,
       updated_at: now,
-    },
-  ];
-
-  const evidence: Evidence[] = [
-    {
-      id: 1,
-      project_id: 1,
-      task_id: 1,
-      evidence_type: 'Test Report',
-      title: '10M Frame Stress Benchmark Log',
-      content_or_url: 'https://telemetry.projectpilot.local/reports/bench-01',
-      is_verified: true,
-      uploaded_by: 'Alex Mercer',
-      created_at: now,
     },
   ];
 
@@ -235,41 +229,61 @@ function createInitialStore(): OfflineStore {
     {
       id: 1,
       project_id: 1,
-      readiness_status: 'Nearly Ready',
-      confidence_score: 84,
-      summary:
-        'Phase 1 telemetry ingestion is complete and verified. 2 required tasks in Phase 2 remain before the completion gate unlocks.',
-      missing_items: [
-        'Complete required task: Implement emergency cutoff signal handler',
-        'Complete required task: Attach hardware-in-the-loop verification report',
-      ],
-      blocker_analysis: 'No active blockers detected.',
-      requirement_Preset_gaps: ['REQ-02 has 2 incomplete linked tasks.'],
-      recommended_next_steps: [
-        'Finish "Implement emergency cutoff signal handler" (weight 4.0)',
-        'Attach verification evidence for Phase 2 safety certification',
-      ],
-      evidence_gaps: [],
-       deterministic_metrics_snapshot: {
+      progress_snapshot: 62.5,
+      readiness_status: 'In Progress',
+      ai_summary:
+        'Phase 1 telemetry ingestion is complete and verified. 2 tasks in Phase 2 remain before the completion gate unlocks.',
+      findings: {
+        overall_summary:
+          'Phase 1 telemetry ingestion is complete and verified. 2 tasks in Phase 2 remain before the completion gate unlocks.',
+        recorded_progress_percentage: 62.5,
+        readiness_status: 'In Progress',
+        eligible_for_completion: false,
+        completed_work: [
+          { id: 1, title: 'Implement zero-copy ring buffer parser' },
+          { id: 2, title: 'Calibrate 3D gyroscopic state estimator' },
+        ],
+        remaining_tasks: [
+          { id: 3, title: 'Implement emergency cutoff signal handler' },
+          { id: 4, title: 'Attach hardware-in-the-loop verification report' },
+        ],
+        missing_requirements: [{ id: 2, title: 'Deterministic Emergency Cutoff Interlock' }],
+        blocked_or_overdue_tasks: [],
+        unverified_acceptance_criteria: [],
+        failed_verification_checks: [],
+        recommended_next_actions: [
+          {
+            task_id: 3,
+            title: 'Implement emergency cutoff signal handler',
+            priority: 'Critical',
+            why_it_matters: 'Required for mandatory safety requirement #2.',
+            action_type: 'complete_task',
+          },
+        ],
+        limitations_or_uncertainties: [],
+        blocking_reasons: ['2 task(s) are not yet Done.'],
+        ai_used: false,
+        ai_error: null,
+      },
+      state_snapshot: {
         progress_percentage: 62.5,
         completed_tasks: 2,
         total_tasks: 4,
-        blocked_tasks: 0,
       },
-      model_used: 'deterministic-fallback-engine',
-      is_fallback: true,
-      is_outdated: false,
+      model_name: 'deterministic-fallback-engine',
+      is_stale: false,
       created_at: now,
-    } as unknown as Assessment,
+      invalidated_at: null,
+    },
   ];
 
   const activity: ActivityLog[] = [
     {
       id: 1,
       project_id: 1,
-      actor: 'Alex Mercer',
-      action_type: 'PROJECT_INITIALIZED',
-      message: 'Initialized Autonomous Flight Telemetry Core workspace.',
+      task_id: null,
+      action: 'project_created',
+      details: { message: 'Initialized Autonomous Flight Telemetry Core workspace.' },
       created_at: now,
     },
   ];
@@ -309,92 +323,102 @@ function saveStore(store: OfflineStore): void {
   }
 }
 
-function recomputeProject(store: OfflineStore, projectId: number): Project {
-  const project = store.projects.find((p) => p.id === projectId)!;
+function computeGate(store: OfflineStore, projectId: number): CompletionGateResult {
   const tasks = store.tasks.filter((t) => t.project_id === projectId);
   const reqs = store.requirements.filter((r) => r.project_id === projectId);
-  const evs = store.evidence.filter((e) => e.project_id === projectId);
-
-  for (const t of tasks) {
-    t.evidence_count = evs.filter((e) => e.task_id === t.id).length;
-  }
-
-  for (const r of reqs) {
-    const linked = tasks.filter((t) => (t.requirement_ids || []).includes(r.id));
-    r.linked_task_ids = linked.map((t) => t.id);
-    r.total_task_count = linked.length;
-    r.completed_task_count = linked.filter((t) => t.status === 'Done').length;
-    r.is_covered = linked.length > 0 && r.completed_task_count === linked.length;
-  }
 
   const totalWeight = tasks.reduce((sum, t) => sum + (Number(t.weight) || 1), 0);
   const completedWeight = tasks
     .filter((t) => t.status === 'Done')
     .reduce((sum, t) => sum + (Number(t.weight) || 1), 0);
-
-  project.total_tasks = tasks.length;
-  project.completed_tasks = tasks.filter((t) => t.status === 'Done').length;
-  project.blocked_tasks = tasks.filter((t) => t.is_blocked || t.status === 'Blocked').length;
-  project.total_requirements = reqs.length;
-  project.covered_requirements = reqs.filter((r) => r.is_covered).length;
-  project.total_weight = totalWeight;
-  project.completed_weight = completedWeight;
-  project.progress_percentage =
+  const progress =
     totalWeight > 0 ? Number(((completedWeight / totalWeight) * 100).toFixed(1)) : 0;
 
-  const gate = computeGate(store, projectId);
-  project.can_mark_complete = gate.can_mark_complete;
-  project.updated_at = nowIso();
-  return project;
-}
-
-function computeGate(store: OfflineStore, projectId: number): CompletionGateResult {
-  const project = store.projects.find((p) => p.id === projectId);
-  const tasks = store.tasks.filter((t) => t.project_id === projectId);
-  const reqs = store.requirements.filter((r) => r.project_id === projectId);
-  const assessments = store.assessments.filter((a) => a.project_id === projectId);
+  const incompleteTasks = tasks.filter((t) => t.status !== 'Done');
+  const blockedTasks = tasks.filter((t) => t.status === 'Blocked');
+  const mandatoryReqs = reqs.filter((r) => r.is_mandatory);
+  const unmappedMandatory = mandatoryReqs.filter((r) => (r.linked_task_ids || []).length === 0);
+  const unsatisfiedMandatory = mandatoryReqs.filter((r) => r.status !== 'Satisfied');
 
   const blockingReasons: string[] = [];
   if (tasks.length === 0) {
     blockingReasons.push('Project must have at least 1 task.');
   }
-  const incompleteRequired = tasks.filter(
-    (t) => t.is_required_for_completion && t.status !== 'Done'
-  );
-  if (incompleteRequired.length > 0) {
-    blockingReasons.push(`${incompleteRequired.length} required task(s) are not yet Done.`);
+  if (incompleteTasks.length > 0) {
+    blockingReasons.push(`${incompleteTasks.length} task(s) are not yet Done.`);
   }
-  const blocked = tasks.filter((t) => t.is_blocked || t.status === 'Blocked');
-  if (blocked.length > 0) {
-    blockingReasons.push(`${blocked.length} task(s) are currently Blocked.`);
+  if (blockedTasks.length > 0) {
+    blockingReasons.push(`${blockedTasks.length} task(s) are currently Blocked.`);
   }
-  const mandatoryUncovered = reqs.filter((r) => r.is_mandatory && !r.is_covered);
-  if (mandatoryUncovered.length > 0) {
+  if (unsatisfiedMandatory.length > 0) {
     blockingReasons.push(
-      `${mandatoryUncovered.length} mandatory requirement(s) are not fully covered by Done tasks.`
+      `${unsatisfiedMandatory.length} mandatory requirement(s) are not yet Satisfied.`
     );
   }
-  const latestAssessment = assessments[0];
-  if (!latestAssessment || latestAssessment.is_outdated) {
-    blockingReasons.push('A current (non-outdated) AI Readiness Assessment is required.');
-  }
+
+  const eligible = blockingReasons.length === 0;
 
   return {
-    can_mark_complete: blockingReasons.length === 0,
-    progress_percentage: project?.progress_percentage ?? 0,
-    has_at_least_one_task: tasks.length > 0,
-    all_required_tasks_done: tasks.length > 0 && incompleteRequired.length === 0,
-    zero_blocked_tasks: blocked.length === 0,
-    all_mandatory_requirements_covered: mandatoryUncovered.length === 0,
-    has_current_assessment: Boolean(latestAssessment && !latestAssessment.is_outdated),
-    blocking_reasons: blockingReasons,
-    incomplete_required_tasks: incompleteRequired.map((t) => ({ id: t.id, title: t.title })),
-    uncovered_mandatory_requirements: mandatoryUncovered.map((r) => ({
+    progress_percentage: progress,
+    completed_task_weight: completedWeight,
+    total_task_weight: totalWeight,
+    total_tasks: tasks.length,
+    completed_tasks: tasks.filter((t) => t.status === 'Done').length,
+    readiness_status: eligible ? 'Eligible for Completion' : 'In Progress',
+    eligible_for_completion: eligible,
+    mandatory_requirements_total: mandatoryReqs.length,
+    mandatory_requirements_satisfied:
+      mandatoryReqs.length - unsatisfiedMandatory.length,
+    unmapped_mandatory_requirements: unmappedMandatory.map((r) => ({
       id: r.id,
-      code: r.code,
       title: r.title,
     })),
+    unsatisfied_mandatory_requirements: unsatisfiedMandatory.map((r) => ({
+      id: r.id,
+      title: r.title,
+    })),
+    incomplete_required_tasks: incompleteTasks.map((t) => ({ id: t.id, title: t.title })),
+    blocked_or_review_mandatory_tasks: blockedTasks.map((t) => ({ id: t.id, title: t.title })),
+    overdue_tasks: [],
+    unverified_acceptance_criteria: [],
+    failed_verification_checks: [],
+    unsatisfied_milestones: [],
+    unsatisfied_dependencies: [],
+    blocking_reasons: blockingReasons,
   };
+}
+
+function recomputeProject(store: OfflineStore, projectId: number): Project {
+  const project = store.projects.find((p) => p.id === projectId)!;
+  const tasks = store.tasks.filter((t) => t.project_id === projectId);
+  const reqs = store.requirements.filter((r) => r.project_id === projectId);
+
+  for (const t of tasks) {
+    t.evidence_items = store.evidence.filter((e) => e.task_id === t.id);
+  }
+
+  for (const r of reqs) {
+    const linked = tasks.filter((t) => (t.requirement_ids || []).includes(r.id));
+    r.linked_task_ids = linked.map((t) => t.id);
+    if (linked.length === 0) {
+      r.status = 'Unmapped';
+    } else if (linked.every((t) => t.status === 'Done')) {
+      r.status = 'Satisfied';
+    } else {
+      r.status = 'In Progress';
+    }
+  }
+
+  const gate = computeGate(store, projectId);
+  project.total_tasks = gate.total_tasks;
+  project.completed_tasks = gate.completed_tasks;
+  project.blocked_tasks = tasks.filter((t) => t.status === 'Blocked').length;
+  project.progress_percentage = gate.progress_percentage;
+  project.eligible_for_completion = gate.eligible_for_completion;
+  project.readiness_status =
+    project.status === 'Completed' ? 'Completed' : gate.readiness_status;
+  project.updated_at = nowIso();
+  return project;
 }
 
 export function handleOfflineRequest<T>(path: string, options: RequestInit = {}): T {
@@ -421,23 +445,25 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
   }
 
   if (cleanPath === '/auth/login' || cleanPath === '/auth/register') {
+    const now = nowIso();
     const email = String(body.email || 'pilot@projectpilot.ai').trim().toLowerCase();
-    let user = store.users.find((u) => u.email.toLowerCase() === email);
-    if (!user) {
-      user = {
+    let existingUser = store.users.find((u) => u.email.toLowerCase() === email);
+    if (!existingUser) {
+      existingUser = {
         id: store.users.length + 1,
         email,
-        full_name: body.full_name?.trim() || email.split('@')[0],
-        created_at: nowIso(),
+        full_name: String(body.full_name || email.split('@')[0]).trim(),
+        created_at: now,
+        updated_at: now,
       };
-      store.users.push(user);
+      store.users.push(existingUser);
     }
-    store.currentUserId = user.id;
+    store.currentUserId = existingUser.id;
     saveStore(store);
     const response: TokenResponse = {
-      access_token: `offline-token-${user.id}-${Date.now()}`,
+      access_token: `offline-token-${existingUser.id}-${Date.now()}`,
       token_type: 'bearer',
-      user,
+      user: existingUser,
     };
     return response as unknown as T;
   }
@@ -456,22 +482,15 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
     saveStore(store);
     const summary: DashboardSummary = {
       total_projects: store.projects.length,
-      completed_projects: store.projects.filter((p) => p.status === 'Completed').length,
-      in_progress_projects: store.projects.filter((p) => p.status === 'In Progress').length,
-      at_risk_or_blocked_projects: store.projects.filter(
-        (p) => p.status === 'At Risk' || p.blocked_tasks > 0
-      ).length,
-      overall_completion_rate:
-        store.projects.length > 0
-          ? Number(
-              (
-                store.projects.reduce((s, p) => s + p.progress_percentage, 0) /
-                store.projects.length
-              ).toFixed(1)
-            )
-          : 0,
+      projects_in_progress: store.projects.filter((p) => p.status === 'In Progress').length,
+      projects_eligible_for_completion: store.projects.filter((p) => p.eligible_for_completion)
+        .length,
+      projects_with_blockers: store.projects.filter((p) => p.blocked_tasks > 0).length,
+      overdue_tasks_count: 0,
+      upcoming_deadlines: [],
       projects: store.projects,
       recent_activity: store.activity.slice(0, 15),
+      latest_assessments: store.assessments.slice(0, 5),
     };
     return summary as unknown as T;
   }
@@ -488,26 +507,24 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
     const newProj: Project = {
       id: newId,
       owner_id: store.currentUserId,
-      name: body.name || `Demo Cockpit Project #${newId}`,
+      name: body.name || `Cockpit Project #${newId}`,
       description: body.description || 'Structured project with deterministic quality gates.',
       objectives: body.objectives || 'Complete all mandatory requirements and tasks.',
-      category: body.category || 'Engineering',
-      target_completion_date: body.target_completion_date || '2026-12-31',
+      completion_criteria: body.completion_criteria || '100% required tasks Done.',
       status: body.status || 'In Progress',
+      priority: body.priority || 'High',
+      start_date: body.start_date || now.slice(0, 10),
+      deadline: body.deadline || '2026-12-31',
       progress_percentage: 0,
+      readiness_status: 'In Progress',
+      eligible_for_completion: false,
       total_tasks: 0,
       completed_tasks: 0,
       blocked_tasks: 0,
-      total_requirements: 0,
-      covered_requirements: 0,
-      completed_weight: 0,
-      total_weight: 0,
-      can_mark_complete: false,
-      confirmed_by_user: false,
-      completion_notes: null,
-      completed_at: null,
+      overdue_tasks: 0,
       created_at: now,
       updated_at: now,
+      completed_at: null,
     };
     store.projects.unshift(newProj);
     saveStore(store);
@@ -541,11 +558,12 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
     const pid = Number(gateMatch[1]);
     recomputeProject(store, pid);
     const gate = computeGate(store, pid);
-    const recs: NextStepRecommendation[] = gate.blocking_reasons.map((r, i) => ({
-      priority_rank: i + 1,
-      category: 'Gate Blocker',
-      action: r,
-      impact: 'Required to unlock project completion.',
+    const recs: NextStepRecommendation[] = gate.blocking_reasons.map((r, idx) => ({
+      task_id: null,
+      title: r,
+      priority: idx === 0 ? 'Critical' : 'High',
+      why_it_matters: 'Required to unlock formal project completion.',
+      action_type: 'resolve_blocker',
     }));
     return { gate, recommended_next_steps: recs } as unknown as T;
   }
@@ -564,22 +582,20 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
       return store.requirements.filter((r) => r.project_id === pid) as unknown as T;
     }
     if (method === 'POST') {
+      const now = nowIso();
       const id = store.requirements.reduce((m, r) => Math.max(m, r.id), 0) + 1;
       const req: Requirement = {
         id,
         project_id: pid,
-        code: body.code || `REQ-0${id}`,
         title: body.title || 'New Requirement',
         description: body.description || '',
-        category: body.category || 'Functional',
-        priority: body.priority || 'High',
         is_mandatory: body.is_mandatory ?? true,
         acceptance_criteria: body.acceptance_criteria || '',
-        is_covered: false,
+        verification_notes: body.verification_notes || '',
+        status: 'Unmapped',
         linked_task_ids: [],
-        completed_task_count: 0,
-        total_task_count: 0,
-        created_at: nowIso(),
+        created_at: now,
+        updated_at: now,
       };
       store.requirements.push(req);
       recomputeProject(store, pid);
@@ -595,19 +611,21 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
       return store.milestones.filter((m) => m.project_id === pid) as unknown as T;
     }
     if (method === 'POST') {
+      const now = nowIso();
       const id = store.milestones.reduce((m, item) => Math.max(m, item.id), 0) + 1;
       const ms: Milestone = {
         id,
         project_id: pid,
-        name: body.name || 'New Milestone',
+        title: body.title || 'New Milestone',
         description: body.description || '',
-        sequence_order: body.sequence_order || id,
-        target_date: body.target_date || null,
+        due_date: body.due_date || null,
+        is_required: body.is_required ?? true,
         status: 'In Progress',
-        progress_percentage: 0,
+        computed_progress: 0,
         total_tasks: 0,
         completed_tasks: 0,
-        created_at: nowIso(),
+        created_at: now,
+        updated_at: now,
       };
       store.milestones.push(ms);
       saveStore(store);
@@ -634,14 +652,14 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
         status: body.status || 'To Do',
         priority: body.priority || 'Medium',
         weight: Number(body.weight) || 1,
-        is_required_for_completion: body.is_required_for_completion ?? true,
-        is_blocked: Boolean(body.is_blocked),
-        blocker_reason: body.blocker_reason || null,
-        acceptance_criteria: body.acceptance_criteria || '',
+        estimated_hours: Number(body.estimated_hours) || 2,
+        actual_hours: Number(body.actual_hours) || 0,
         due_date: body.due_date || null,
-        assignee: body.assignee || 'Alex Mercer',
+        notes: body.notes || '',
         requirement_ids: body.requirement_ids || [],
-        evidence_count: 0,
+        dependency_ids: body.dependency_ids || [],
+        incomplete_prerequisite_ids: [],
+        evidence_items: [],
         completed_at: body.status === 'Done' ? now : null,
         created_at: now,
         updated_at: now,
@@ -677,7 +695,8 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
   const evProjMatch = cleanPath.match(/^\/projects\/(\d+)\/evidence$/);
   if (evProjMatch) {
     const pid = Number(evProjMatch[1]);
-    return store.evidence.filter((e) => e.project_id === pid) as unknown as T;
+    const taskIds = store.tasks.filter((t) => t.project_id === pid).map((t) => t.id);
+    return store.evidence.filter((e) => taskIds.includes(e.task_id)) as unknown as T;
   }
 
   const evTaskMatch = cleanPath.match(/^\/tasks\/(\d+)\/evidence$/);
@@ -685,16 +704,16 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
     const tid = Number(evTaskMatch[1]);
     const task = store.tasks.find((t) => t.id === tid)!;
     const id = store.evidence.reduce((m, e) => Math.max(m, e.id), 0) + 1;
+    const now = nowIso();
     const ev: Evidence = {
       id,
-      project_id: task.project_id,
       task_id: tid,
-      evidence_type: body.evidence_type || 'Link',
-      title: body.title || 'Verification Evidence',
-      content_or_url: body.content_or_url || '',
-      is_verified: true,
-      uploaded_by: 'Alex Mercer',
-      created_at: nowIso(),
+      evidence_type: body.evidence_type || 'verification_note',
+      description: body.description || 'Verification Evidence',
+      uri: body.uri || '',
+      verification_status: 'verified',
+      verified_at: now,
+      created_at: now,
     };
     store.evidence.push(ev);
     recomputeProject(store, task.project_id);
@@ -712,42 +731,50 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
       const p = recomputeProject(store, pid);
       const gate = computeGate(store, pid);
       const id = store.assessments.reduce((m, a) => Math.max(m, a.id), 0) + 1;
+      const now = nowIso();
       const newAssessment: Assessment = {
         id,
         project_id: pid,
-        readiness_status: gate.can_mark_complete
-          ? 'Ready for Completion'
-          : p.progress_percentage >= 50
-            ? 'Nearly Ready'
-            : 'In Progress',
-        confidence_score: Math.min(100, Math.round(p.progress_percentage + 20)),
-        summary: gate.can_mark_complete
+        progress_snapshot: p.progress_percentage,
+        readiness_status: gate.readiness_status,
+        ai_summary: gate.eligible_for_completion
           ? 'All deterministic completion gates and mandatory requirements are satisfied.'
           : `Project is at ${p.progress_percentage}% weighted completion. Resolve remaining gate items to unlock formal completion.`,
-        missing_items: gate.blocking_reasons,
-        blocker_analysis:
-          p.blocked_tasks > 0
-            ? `${p.blocked_tasks} blocked task(s) require immediate resolution.`
-            : 'Zero blocked tasks detected.',
-        requirement_coverage_gaps: gate.uncovered_mandatory_requirements.map(
-          (r) => `${r.code}: ${r.title}`
-        ),
-        recommended_next_steps:
-          gate.blocking_reasons.length > 0
-            ? gate.blocking_reasons
-            : ['Confirm formal project completion in the Readiness Gate panel.'],
-        evidence_gaps: [],
-        deterministic_metrics_snapshot: {
+        findings: {
+          overall_summary: gate.eligible_for_completion
+            ? 'All deterministic completion gates and mandatory requirements are satisfied.'
+            : `Project is at ${p.progress_percentage}% weighted completion. Resolve remaining gate items to unlock formal completion.`,
+          recorded_progress_percentage: p.progress_percentage,
+          readiness_status: gate.readiness_status,
+          eligible_for_completion: gate.eligible_for_completion,
+          completed_work: [],
+          remaining_tasks: gate.incomplete_required_tasks,
+          missing_requirements: gate.unsatisfied_mandatory_requirements,
+          blocked_or_overdue_tasks: gate.blocked_or_review_mandatory_tasks,
+          unverified_acceptance_criteria: [],
+          failed_verification_checks: [],
+          recommended_next_actions: gate.blocking_reasons.map((r) => ({
+            task_id: null,
+            title: r,
+            priority: 'High',
+            why_it_matters: 'Required for completion gate.',
+            action_type: 'resolve_blocker',
+          })),
+          limitations_or_uncertainties: [],
+          blocking_reasons: gate.blocking_reasons,
+          ai_used: false,
+          ai_error: null,
+        },
+        state_snapshot: {
           progress_percentage: p.progress_percentage,
           completed_tasks: p.completed_tasks,
           total_tasks: p.total_tasks,
-          blocked_tasks: p.blocked_tasks,
         },
-        model_used: 'deterministic-fallback-engine',
-        is_fallback: true,
-        is_outdated: false,
-        created_at: nowIso(),
-      } as unknown as Assessment;
+        model_name: 'deterministic-fallback-engine',
+        is_stale: false,
+        created_at: now,
+        invalidated_at: null,
+      };
       store.assessments.unshift(newAssessment);
       recomputeProject(store, pid);
       saveStore(store);
@@ -760,8 +787,7 @@ export function handleOfflineRequest<T>(path: string, options: RequestInit = {})
     const pid = Number(completeMatch[1]);
     const p = recomputeProject(store, pid);
     p.status = 'Completed';
-    p.confirmed_by_user = true;
-    p.completion_notes = body.completion_notes || 'Completed';
+    p.readiness_status = 'Completed';
     p.completed_at = nowIso();
     saveStore(store);
     return p as unknown as T;
