@@ -112,9 +112,6 @@ export const Layout: React.FC = () => {
                     AI
                   </span>
                 </Link>
-                <span className="text-[11px] text-slate-400 font-medium block">
-                  3D Intelligent Cockpit
-                </span>
               </div>
             </div>
           </div>
@@ -186,35 +183,7 @@ export const Layout: React.FC = () => {
         </div>
 
         {/* Footer & User Profile */}
-        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40 space-y-3">
-          {/* Local AI status */}
-          <div className="rounded-lg px-3 py-2 bg-slate-900/80 border border-slate-800 text-[11px]">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Radio
-                  className={`w-3.5 h-3.5 ${
-                    ollamaOnline ? 'text-emerald-400 animate-pulse' : 'text-amber-400'
-                  }`}
-                />
-                <span className="text-slate-300 font-medium">
-                  {ollamaOnline ? 'Local Ollama AI' : 'Intelligent Core'}
-                </span>
-              </div>
-              <span
-                className={`text-[10px] font-semibold px-1.5 py-0.5 rounded ${
-                  ollamaOnline
-                    ? 'text-emerald-400 bg-emerald-950/60'
-                    : 'text-amber-400 bg-amber-950/60'
-                }`}
-              >
-                {ollamaOnline ? 'Active' : 'Ready'}
-              </span>
-            </div>
-            <p className="text-[10px] text-slate-400 truncate mt-1">
-              Model: <span className="font-mono">{aiHealth?.configured_model || 'llama3.2:3b'}</span>
-            </p>
-          </div>
-
+        <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
           {/* User Card */}
           <div className="flex items-center justify-between gap-2 px-1">
             <div className="flex items-center gap-2.5 min-w-0">
