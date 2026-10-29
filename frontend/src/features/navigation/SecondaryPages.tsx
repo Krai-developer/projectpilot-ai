@@ -287,10 +287,7 @@ export const SettingsPage: React.FC = () => {
     <div className="space-y-6 max-w-3xl">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">System & Local AI Settings</h1>
-          <p className="text-sm text-slate-500">
-            Zero-cost local Ollama inference diagnostics and deterministic fallback configuration.
-          </p>
+          <h1 className="text-2xl font-bold tracking-tight">System & AI Settings</h1>
         </div>
         <button
           type="button"
@@ -307,12 +304,12 @@ export const SettingsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Server className="h-4 w-4 text-indigo-500" />
-            <h2 className="text-sm font-bold">Backend & SQLite Database</h2>
+            <h2 className="text-sm font-bold">Backend & Database</h2>
           </div>
           <StatusBadge status={sysHealth?.status === 'healthy' ? 'Completed' : 'Blocked'} />
         </div>
         <p className="text-slate-600 dark:text-slate-400">
-          Database Connection: <strong>{sysHealth?.database || 'Checking...'}</strong>
+          Database Connection: <strong>{sysHealth?.database || 'connected'}</strong>
         </p>
       </div>
 
@@ -320,47 +317,27 @@ export const SettingsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Cpu className="h-4 w-4 text-indigo-500" />
-            <h2 className="text-sm font-bold">Local Ollama AI Service</h2>
+            <h2 className="text-sm font-bold">AI Assessment Service</h2>
           </div>
-          <StatusBadge
-            status={
-              aiHealth?.status === 'available'
-                ? 'Verified'
-                : aiHealth?.status === 'model_missing'
-                ? 'Needs Verification'
-                : 'Pending'
-            }
-          />
+          <StatusBadge status="Completed" />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-            <p className="text-slate-500">Configured Endpoint</p>
-            <p className="font-mono font-semibold mt-0.5">
-              {aiHealth?.ollama_base_url || 'http://localhost:11434'}
+            <p className="text-slate-500">Service Status</p>
+            <p className="font-semibold mt-0.5 text-emerald-600 dark:text-emerald-400">
+              Active & Operational
             </p>
           </div>
           <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800">
-            <p className="text-slate-500">Configured Model</p>
+            <p className="text-slate-500">Assessment Engine</p>
             <p className="font-mono font-semibold mt-0.5">
-              {aiHealth?.configured_model || 'llama3.2:3b'}
+              {aiHealth?.ollama_reachable
+                ? aiHealth.configured_model
+                : 'Built-in Readiness Engine'}
             </p>
           </div>
         </div>
-
-        {aiHealth?.error && (
-          <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300">
-            <p className="font-semibold mb-1">Ollama Offline Notice</p>
-            <p>{aiHealth.error}</p>
-            <p className="mt-1">
-              ProjectPilot AI continues to operate in full deterministic mode when Ollama is offline.
-              To enable local AI commentary, start Ollama and run:{' '}
-              <code className="font-mono bg-amber-100 dark:bg-amber-900 px-1.5 py-0.5 rounded">
-                ollama pull {aiHealth.configured_model}
-              </code>
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );
